@@ -9,9 +9,11 @@ Keep the delta confined there; never reformat upstream files (M6.1/M6.2).
 ## Added (Dunit-only files)
 
 ```
+DELTA.md
 PORTING.md
 tools/dunit/build-tcc-dunit.sh
 tools/dunit/build-tcc.sh
+tools/dunit/gen-delta.sh
 UPSTREAM.md
 ```
 
@@ -24,5 +26,5 @@ UPSTREAM.md
 ## Summary
 
 ```
- 5 files changed, 222 insertions(+)
+ 7 files changed, 316 insertions(+)
 ```
