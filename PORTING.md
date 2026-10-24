@@ -27,9 +27,24 @@ Status against the Dunit kernel + musl port (dunit-os):
   `malloc` family, `posix_spawn`/`wait` (to run the output).
 - **Not required for file-output compile:** pipes/redirection, sockets, signals,
   dynamic linking.
-- **Deferred:** `tcc -run` (in-memory JIT) needs simultaneously writable+
-  executable memory; Dunit's `mprotect` forbids W+X by design, so `-run` is a
-  later, separate decision. File-output mode (`-o`) comes first.
+- **Deferred:** `tcc -run` is a separate policy decision. Existing Dunit
+  `mprotect` (syscall 35) already permits RW→RX and forbids simultaneous W+X;
+  a new executable-memory syscall is not inherently required. Upstream's
+  default x86_64 run-memory policy requests RWX, which is incompatible, but
+  its `CONFIG_RUNMEM_RO=2` path separates RX/RO/RW pages after relocation.
+  That path still needs an isolated, page-owned allocation/lifetime audit,
+  static symbol resolution and runtime-support packaging before it can be
+  claimed to work. No JIT policy is selected by the file-output port.
+
+## Executable stack descriptor
+
+The ELF writer reserves and emits `PT_GNU_STACK` with `PF_R | PF_W`, alignment
+16, and zero file/memory size for executable output. It explicitly records
+the NX-stack contract already enforced by the Dunit loader. This standard
+ELF metadata does not change Dunit ABI, create a mapping or affect object
+output. Emitted binaries must pass dunit-os's static ELF gate after rebuilding
+the compiler; the fork does not interpret a missing header as permission to
+execute the stack.
 
 ## Build model
 

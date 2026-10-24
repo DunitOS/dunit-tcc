@@ -2257,6 +2257,7 @@ struct dyn_inf {
     int notes;
     int ehfr;
     int dyna;
+    int stack;
 };
 
 /* Decide the layout of sections loaded in memory. This must be done before
@@ -2434,6 +2435,10 @@ static int layout_sections(TCCState *s1, int *sec_order, struct dyn_inf *d)
         d->ehfr = phnum++;
     if (d->relro)
         d->relro = phnum++;
+    /* Executable output has an explicit NX stack contract.  This is a
+       zero-sized descriptor, not another loadable segment. */
+    if (s1->output_type == TCC_OUTPUT_EXE)
+        d->stack = phnum++;
     d->phnum = phnum;
     d->phdr = tcc_mallocz(phnum * sizeof(ElfW(Phdr)));
 
@@ -2544,6 +2549,12 @@ static int layout_sections(TCCState *s1, int *sec_order, struct dyn_inf *d)
     }
 
     /* Fill other headers */
+    if (d->stack) {
+        ph = &d->phdr[d->stack];
+        ph->p_type = PT_GNU_STACK;
+        ph->p_flags = PF_R | PF_W;
+        ph->p_align = 16;
+    }
     if (d->dyna)
         fill_phdr(&d->phdr[d->dyna], PT_DYNAMIC, d->dynamic);
     if (d->ehfr)
