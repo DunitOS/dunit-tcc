@@ -11,20 +11,21 @@ Keep the delta confined there; never reformat upstream files (M6.1/M6.2).
 ```
 DELTA.md
 PORTING.md
+UPSTREAM.md
 tools/dunit/build-tcc-dunit.sh
 tools/dunit/build-tcc.sh
 tools/dunit/gen-delta.sh
-UPSTREAM.md
 ```
 
 ## Modified upstream files
 
 ```
- .gitignore | 1 +
+ .gitignore |  1 +
+ tccelf.c   | 11 +++++++++++
 ```
 
 ## Summary
 
 ```
- 7 files changed, 316 insertions(+)
+ 8 files changed, 344 insertions(+)
 ```
